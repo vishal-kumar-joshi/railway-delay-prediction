@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RailGuard AI — Railway Delay Intelligence</title>
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="app-shell">
+
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon">🚆</div>
+        <div>
+          <h1>RAILGUARD <span>AI</span></h1>
+          <p>Intelligent Railway Delay Prediction System</p>
+        </div>
+      </div>
+
+      <div class="live-pill">
+        <span class="pulse"></span>
+        LIVE INTELLIGENCE
+      </div>
+    </header>
+
+    <main>
+
+      <section class="search-panel glass">
+        <div>
+          <label for="trainInput">TRAIN NUMBER</label>
+          <div class="search-box">
+            <span>🚆</span>
+            <input id="trainInput" type="text" value="12301" placeholder="Enter train number">
+            <button id="trackBtn">TRACK TRAIN</button>
+          </div>
+        </div>
+        <div id="connectionStatus" class="connection waiting">
+          <span class="status-dot"></span>
+          Ready
+        </div>
+      </section>
+
+      <section id="dashboard" class="hidden">
+
+        <section class="train-hero glass">
+          <div>
+            <div class="eyebrow">LIVE TRAIN</div>
+            <h2><span id="trainNumber">—</span> <span id="trainName">—</span></h2>
+            <div class="route-line">
+              <span id="previousStation">—</span>
+              <span class="arrow">→</span>
+              <span id="nextStation">—</span>
+            </div>
+          </div>
+
+          <div class="delay-badge">
+            <strong id="delayMinutes">—</strong>
+            <span>MIN LATE</span>
+          </div>
+
+          <div id="riskBadge" class="risk-badge high">
+            <span>⚠</span>
+            <strong id="riskLevel">—</strong>
+            <small id="predictionText">—</small>
+          </div>
+        </section>
+
+        <section class="prediction-card glass">
+          <div class="section-heading">
+            <span class="icon">◉</span>
+            <div>
+              <h3>AI DELAY PREDICTION</h3>
+              <p>Machine-learning prediction from live railway context</p>
+            </div>
+          </div>
+
+          <div class="probability-wrap">
+            <div class="probability-ring" id="probabilityRing">
+              <div>
+                <strong id="probability">—</strong>
+                <span>%</span>
+              </div>
+            </div>
+
+            <div class="prediction-copy">
+              <span class="mini-label">PROBABILITY OF DELAY</span>
+              <h3 id="predictionHeadline">—</h3>
+              <p id="predictionSubtext">Waiting for live prediction...</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="info-grid">
+
+          <article class="info-card glass">
+            <div class="card-title">
+              <span>🚆</span>
+              <div>
+                <h3>LIVE TRAIN</h3>
+                <p>Current operational position</p>
+              </div>
+            </div>
+
+            <div class="location-main">
+              <div class="location-pin">📍</div>
+              <div>
+                <span class="mini-label">CURRENT LOCATION</span>
+                <strong id="currentLocation">—</strong>
+              </div>
+            </div>
+
+            <div class="station-flow">
+              <div>
+                <span>PREVIOUS</span>
+                <strong id="previousStationCard">—</strong>
+              </div>
+              <div class="flow-arrow">→</div>
+              <div>
+                <span>NEXT</span>
+                <strong id="nextStationCard">—</strong>
+              </div>
+            </div>
+
+            <div class="data-row">
+              <span>Tracking mode</span>
+              <strong id="trackingMode">—</strong>
+            </div>
+          </article>
+
+          <article class="info-card glass">
+            <div class="card-title">
+              <span>🌦</span>
+              <div>
+                <h3>WEATHER</h3>
+                <p>Current conditions near train</p>
+              </div>
+            </div>
+
+            <div class="weather-main">
+              <div class="temperature">
+                <span>🌡</span>
+                <strong id="temperature">—</strong>
+              </div>
+              <div>
+                <span class="mini-label">CONDITION</span>
+                <strong id="weatherCondition">—</strong>
+              </div>
+            </div>
+
+            <div class="weather-grid">
+              <div><span>💧 Humidity</span><strong id="humidity">—</strong></div>
+              <div><span>🌧 Rain</span><strong id="rain">—</strong></div>
+              <div><span>💨 Wind</span><strong id="wind">—</strong></div>
+              <div><span>👁 Visibility</span><strong id="visibility">—</strong></div>
+            </div>
+          </article>
+
+        </section>
+
+        <section class="map-card glass">
+          <div class="map-header">
+            <div class="section-heading">
+              <span class="icon">⌖</span>
+              <div>
+                <h3>LIVE ROUTE MAP</h3>
+                <p id="routeSummary">Loading railway route...</p>
+              </div>
+            </div>
+
+            <div class="map-legend">
+              <span><i class="legend-dot current"></i> Current</span>
+              <span><i class="legend-dot station"></i> Station</span>
+            </div>
+          </div>
+
+          <div id="map"></div>
+        </section>
+
+        <section class="why-card glass">
+          <div class="section-heading">
+            <span class="icon">⚠</span>
+            <div>
+              <h3>WHY AI PREDICTS DELAY</h3>
+              <p>Signals contributing to the current prediction</p>
+            </div>
+          </div>
+
+          <div id="reasons" class="reason-list"></div>
+        </section>
+
+        <section class="footer-status">
+          <span>● SYSTEM ONLINE</span>
+          <span id="lastUpdated">Last updated: —</span>
+          <span id="coordinates">Coordinates: —</span>
+        </section>
+
+      </section>
+
+      <section id="errorPanel" class="error-panel hidden">
+        <div>⚠</div>
+        <h3>Unable to load train data</h3>
+        <p id="errorMessage">Check that the FastAPI backend is running.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
